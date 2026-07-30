@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống rút gọn & vượt link tự động</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+        }
+        .step {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px dashed #cbd5e0;
+            border-radius: 8px;
+            background: #f7fafc;
+        }
+        .step p {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        input[type="text"], input[type="url"] {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            display: inline-block;
+            background: #3182ce;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .btn:hover { background: #2b6cb0; }
+        .btn-tiktok { background: #000000; }
+        .btn-tiktok:hover { background: #333333; }
+        .btn-youtube { background: #e53e3e; }
+        .btn-youtube:hover { background: #c53030; }
+        .btn-success {
+            background: #38a169;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+        }
+        .btn-success:hover { background: #2f855a; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <!-- GIAO DIỆN 1: TẠO LINK TỰ ĐỘNG -->
+    <div id="createSection">
+        <h2>Tạo Link Vượt Tự Động</h2>
+        <div class="step">
+            <p>Nhập đường link gốc của bạn:</p>
+            <input type="url" id="targetInput" placeholder="https://example.com/file-cua-ban">
+            <br>
+            <button class="btn" onclick="generateShortLink()">Tạo Link Ngay</button>
+        </div>
+        <div id="resultBox" class="step hidden">
+            <p>Link rút gọn của bạn:</p>
+            <input type="text" id="shortResult" readonly>
+            <br>
+            <button class="btn" onclick="copyShortLink()">Sao Chép Link</button>
+        </div>
+    </div>
+
+    <!-- GIAO DIỆN 2: TRANG VƯỢT LINK (Hiển thị khi người dùng bấm vào link rút gọn) -->
+    <div id="bypassSection" class="hidden">
+        <h2>Trang Vượt Link Xác Thực</h2>
+        
+        <!-- Bước 1: Mã ngẫu nhiên -->
+        <div class="step">
+            <p>Bước 1: Mã xác nhận của bạn</p>
+            <input type="text" id="codeBox" value="LINK4M-9999" readonly>
+            <br>
+            <button class="btn" onclick="copyCode()">Sao chép mã</button>
+        </div>
+
+        <!-- Bước 2: Xem mạng xã hội -->
+        <div class="step">
+            <p>Bước 2: Ghé thăm liên kết tài trợ</p>
+            <a href="https://www.tiktok.com" target="_blank" class="btn btn-tiktok" onclick="unlockStep()">Xem TikTok</a>
+            <a href="https://www.youtube.com" target="_blank" class="btn btn-youtube" onclick="unlockStep()" style="margin-left: 5px;">Xem YouTube</a>
+        </div>
+
+        <!-- Bước 3: Lấy link gốc -->
+        <div class="step hidden" id="step3">
+            <p>Bước 3: Hoàn thành! Lấy link của bạn</p>
+            <button class="btn btn-success" onclick="goToDestination()">LẤY LINK NGAY</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Kiểm tra xem trang đang ở chế độ "Tạo Link" hay chế độ "Vượt Link" thông qua URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedUrl = urlParams.get('url');
+
+    if (encodedUrl) {
+        // Nếu có tham số url -> Chuyển sang giao diện Vượt Link
+        document.getElementById('createSection').classList.add('hidden');
+        document.getElementById('bypassSection').classList.remove('hidden');
+        
+        // Tạo mã ngẫu nhiên làm mã xác thực tùy ý
+        document.getElementById('codeBox').value = "CODE-" + Math.floor(1000 + Math.random() * 9000);
+    }
+
+    // Hàm tạo link tự động
+    function generateShortLink() {
+        const rawUrl = document.getElementById('targetInput').value;
+        if (!rawUrl) {
+            alert("Vui lòng nhập đường link hợp lệ!");
+            return;
+        }
+
+        // Mã hóa đường link gốc để gắn vào URL hiện tại
+        const encoded = encodeURIComponent(rawUrl);
+        const currentDomain = window.location.origin + window.location.pathname;
+        const finalShortLink = currentDomain + "?url=" + encoded;
+
+        document.getElementById('shortResult').value = finalShortLink;
+        document.getElementById('resultBox').classList.remove('hidden');
+    }
+
+    function copyShortLink() {
+        const copyText = document.getElementById('shortResult');
+        copyText.select();
+        document.execCommand("copy");
+        alert("Đã sao chép link rút gọn!");
+    }
+
+    function copyCode() {
+        const codeBox = document.getElementById("codeBox");
+        codeBox.select();
+        document.execCommand("copy");
+        alert("Đã sao chép mã thành công!");
+    }
+
+    function unlockStep() {
+        // Mở khóa nút lấy link đích sau khi bấm vào mạng xã hội
+        setTimeout(() => {
+            document.getElementById("step3").classList.remove("hidden");
+        }, 1000);
+    }
+
+    function goToDestination() {
+        // Giải mã đường link gốc và chuyển hướng người dùng tới đó
+        const originalUrl = decodeURIComponent(encodedUrl);
+        window.location.href = originalUrl;
+    }
+</script>
+
+</body>
+</html>
